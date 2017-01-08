@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import tokenize as tok
+import parser
 
 def digit_to_roman(digit, unit):
     if unit == 1000:
@@ -78,12 +79,6 @@ def symbol_to_int(symbol):
 
     raise RuntimeError("Invalid symbol")
 
-class InvalidRomanNumeral(Exception):
-    def __init(self, token):
-        self.tok = token
-
-    def token(self):
-        return self.token
 
 def token_to_int(tok):
 
@@ -111,37 +106,69 @@ class RomanNumber:
     def __init__(self, roman_numeral=None):
         self.intrep = 0
         self.strrep = ""
-        self.cur_token = ""
-        self.is_valid = False
+        self.parser = parser.Parser()
 
         if not roman_numeral:
             return
 
         if type(roman_numeral) is str:
-            self.fromString(roman_numeral)
+            self.from_string(roman_numeral)
         elif type(roman_numeral) is int:
-            self.fromInt(roman_numeral)
+            self.from_int(roman_numeral)
         else:
             raise RuntimeError("Cannot initialize from " + type(roman_numeral))
 
+    def __int__(self):
+        return self.intrep
+
+    def __lt__(self, other):
+        return self.intrep < other.intrep
+
+    def __le__(self, other):
+        return self.intrep <= other.intrep
+
+    def __gt__(self, other):
+        return self.intrep > other.intrep
+
+    def __ge__(self, other):
+        return self.intrep >= other.intrep
+
+    def __eq__(self, other):
+        return self.intrep == other.intrep
+
+    def __ne__(self, other):
+        return self.intrep != other.intrep
+
+    def __nonzero__(self):
+        return self.intrep != 0
+
+    def __add__(self, other):
+        return RomanNumber(self.intrep + int(other))
+
+    def __mul__(self, other):
+        return RomanNumber(self.intrep * int(other))
+
+    def __div__(self, other):
+        return RomanNumber(self.intrep / int(other))
+
+    def __str__(self):
+        return self.strrep
 
     def __repr__(self):
         return self.strrep
 
-    def asInt(self):
-        return self.intrep
-
-    def fromString(self, s):
-        self.intrep = 0
+    def from_string(self, s):
         self.strrep = s.upper()
-        self.cur_token = ""
-        self.is_valid = False
-        self.token_gen = tok.tokenize(self.strrep)
-        self.__thou()
-        if not self.is_valid:
-            raise InvalidRomanNumeral(self.cur_token)
 
-    def fromInt(self, n):
+        try:
+            self.intrep = self.parser.parse(self.strrep)
+        except InvalidRomanNumeral as e:
+            print("Invalid token {} found at position {}".format(e.token(),
+                                                                 e.position()))
+            self.strrep = ""
+            self.intrep = 0
+
+    def from_int(self, n):
         self.intrep = n
         self.strrep = ""
 
@@ -158,77 +185,3 @@ class RomanNumber:
 
         n /= 10
         self.strrep = digit_to_roman(n, 1000) + self.strrep
-
-    def __thou(self):
-        try:
-            self.cur_token = self.token_gen.next()
-            if self.cur_token == 'M':
-                self.intrep += token_to_int(self.cur_token)
-                self.__thou()
-            else:
-                self.__hund()
-        except StopIteration:
-            self.is_valid = True
-            return
-
-    def __hund(self):
-        try:
-            if self.cur_token in {
-                    "CM",
-                    "DCCC",
-                    "DCC",
-                    "DC",
-                    "D",
-                    "CD",
-                    "CCC",
-                    "CC",
-                    "C"}:
-                self.intrep += token_to_int(self.cur_token)
-                self.cur_token = self.token_gen.next()
-                self.__tens()
-            else:
-                self.__tens()
-        except StopIteration:
-            self.is_valid = True
-            return
-
-    def __tens(self):
-        try:
-            if self.cur_token in {
-                    "XC",
-                    "LXXX",
-                    "LXX",
-                    "LX",
-                    "L",
-                    "XL",
-                    "XXX",
-                    "XX",
-                    "X"}:
-                self.intrep += token_to_int(self.cur_token)
-                self.cur_token = self.token_gen.next()
-                self.__ones()
-            else:
-                self.__ones()
-        except StopIteration:
-            self.is_valid = True
-            return
-
-
-    def __ones(self):
-        try:
-            if self.cur_token in {
-                    "VIII",
-                    "VII",
-                    "VI",
-                    "V",
-                    "IV",
-                    "III",
-                    "II",
-                    "I"}:
-                self.intrep += token_to_int(self.cur_token)
-                self.cur_token = self.token_gen.next()
-            else:
-                raise InvalidRomanNumeral(self.cur_token)
-        except StopIteration:
-            self.is_valid = True
-            return
