@@ -108,7 +108,7 @@ class RomanNumber:
         self.strrep = ""
         self.parser = parser.Parser()
 
-        if not roman_numeral:
+        if roman_numeral is None:
             return
 
         if type(roman_numeral) is str:
@@ -116,7 +116,7 @@ class RomanNumber:
         elif type(roman_numeral) is int:
             self.from_int(roman_numeral)
         else:
-            raise RuntimeError("Cannot initialize from " + type(roman_numeral))
+            raise RuntimeError("Cannot initialize from {}".format(roman_numeral))
 
     def __int__(self):
         return self.intrep
