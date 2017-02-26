@@ -2,6 +2,7 @@
 
 import tokenize as tok
 
+
 def symbol_to_int(symbol):
     if symbol == 'M':
         return 1000
@@ -20,6 +21,7 @@ def symbol_to_int(symbol):
 
     raise RuntimeError("Invalid symbol")
 
+
 class InvalidRomanNumeral(Exception):
     def __init(self, token, position):
         self.tok = token
@@ -30,6 +32,7 @@ class InvalidRomanNumeral(Exception):
 
     def position(self):
         return self.pos
+
 
 def token_to_int(tok):
 
@@ -52,6 +55,7 @@ def token_to_int(tok):
         return 4
 
     return sum(map(symbol_to_int, list(tok)))
+
 
 class Parser:
     def __init__(self):
@@ -136,7 +140,6 @@ class Parser:
         except StopIteration:
             self.is_valid = True
             return
-
 
     def __ones(self):
         try:

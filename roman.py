@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-import tokenize as tok
+from parser import InvalidRomanNumeral
 import parser
+
 
 def digit_to_roman(digit, unit):
     if unit == 1000:
@@ -61,6 +62,7 @@ def digit_to_roman(digit, unit):
         elif digit in {3, 2, 1}:
             return digit * 'I'
 
+
 def symbol_to_int(symbol):
     if symbol == 'M':
         return 1000
@@ -102,6 +104,7 @@ def token_to_int(tok):
 
     return sum(map(symbol_to_int, list(tok)))
 
+
 class RomanNumber:
     def __init__(self, roman_numeral=None):
         self.intrep = 0
@@ -116,7 +119,8 @@ class RomanNumber:
         elif type(roman_numeral) is int:
             self.from_int(roman_numeral)
         else:
-            raise RuntimeError("Cannot initialize from {}".format(roman_numeral))
+            raise RuntimeError("Cannot initialize from {}".format(
+                      roman_numeral))
 
     def __int__(self):
         return self.intrep

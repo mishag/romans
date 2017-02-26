@@ -4,6 +4,7 @@ import sys
 
 from transition_table import TransitionTable, InvalidSymbol
 
+
 def tokenize(s):
     try:
         if len(s) == 0:
@@ -32,4 +33,3 @@ if __name__ == "__main__":
 
     for tok in tokenize(s):
         print(tok)
-        
